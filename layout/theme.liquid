@@ -10,8 +10,9 @@
     {{ content_for_header }}
     <!-- Header hook for plugins -->
     {{ 'application.css' | asset_url | stylesheet_tag }}
-    {{ 'application.js' | asset_url | script_tag }}
-    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    {% comment %} {{ 'application.js' | asset_url | script_tag }} {% endcomment %}
+    {% comment %} <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script> {% endcomment %}
+    <script src="{{ 'application.js' | asset_url }}" defer></script>
   </head>
   <body>
     {% section 'header' %}

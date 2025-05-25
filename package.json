@@ -5,8 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "webpack",
-    "watch": "webpack --watch"
+    "watch": "webpack --config webpack.config.js --watch"
   },
   "repository": {
     "type": "git",
@@ -23,13 +22,16 @@
   "dependencies": {
     "@tailwindcss/cli": "^4.1.7",
     "alpinejs": "^3.14.9",
+    "swiper": "^11.2.7",
     "tailwindcss": "^4.1.7"
   },
   "devDependencies": {
     "@babel/core": "^7.27.1",
     "@babel/preset-env": "^7.27.2",
-    "babel-loader": "^10.0.0",
-    "webpack": "^5.99.8",
+    "babel-loader": "^8.4.1",
+    "css-loader": "^7.1.2",
+    "style-loader": "^4.0.0",
+    "webpack": "^5.99.9",
     "webpack-cli": "^6.0.1"
   }
 }

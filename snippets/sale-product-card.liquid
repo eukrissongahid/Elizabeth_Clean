@@ -1,0 +1,83 @@
+<div class='w-full py-6 px-3'>
+  <div class='border bg-white shadow-lg rounded-lg overflow-hidden'>
+    <a href='{{ product_product.url }}'>
+      {% if product_product.featured_image %}
+        <div class='h-60 overflow-hidden lg-max-h-60 border-b border-gray-300'>
+          <img
+            class='w-full h-full object-cover transition duration-1000 ease-in-out hover:scale-105 transform'
+            src='{{ product_product.featured_image | img_url: 'medium' }}'
+            alt='{{ product_product.featured_image.alt }}'
+          >
+        </div>
+      {% else %}
+        <div class='h-60 overflow-hidden lg-max-h-60 border-b border-gray-300'>
+          {{ 'product-1' | placeholder_svg_tag: 'w-full h-full object-cover bg-gray-100' }}
+        </div>
+      {% endif %}
+    </a>
+    <div class='flex flex-col p-4 h-[200px]'>
+      <a
+        href='{{ product_product.url }}'
+        class='text-xl text-gray-900 font-semibold uppercase line-clamp-1 flex-shrink'
+        title='{{ product_product.title }}'
+      >
+        {{ product_product.title }}
+      </a>
+      <a
+        href='{{ product_product.url }}'
+        class='text-xs font-light text-gray-500 line-clamp-2 flex-grow'
+      >
+        {{ product_product.description }}
+      </a>
+
+      {% assign lowest_price = null %}
+      {% assign highest_compare_at = null %}
+      {% assign max_discount = 0 %}
+
+      {% for variant in product_product.variants %}
+        {% if variant.available %}
+          {% if lowest_price == null or variant.price < lowest_price %}
+            {% assign lowest_price = variant.price %}
+          {% endif %}
+
+          {% if variant.compare_at_price and variant.compare_at_price > variant.price %}
+            {% assign discount_amount = variant.compare_at_price | minus: variant.price %}
+            {% assign discount = discount_amount
+              | times: 100
+              | divided_by: variant.compare_at_price
+            %}
+
+            {% if discount > max_discount %}
+              {% assign max_discount = discount %}
+              {% assign highest_compare_at = variant.compare_at_price %}
+            {% endif %}
+          {% endif %}
+        {% endif %}
+      {% endfor %}
+
+      <!-- Variant Info (e.g., Color / Storage / Network) -->
+      {% if product_product.variants.size > 1 %}
+        <div class='text-sm font-normal text-gray-600 mt-1 line-clamp-2'>
+          {% comment %} {% assign options = '' %} {% endcomment %}
+          {% for variant in product_product.variants %}
+            {% assign label = variant.title %}
+            {% unless label contains 'Default Title' %}
+              {{ label -}}
+              {%- unless forloop.last %}, {% endunless %}
+            {% endunless %}
+          {% endfor %}
+        </div>
+      {% endif %}
+
+      <div class='text-lg font-semibold text-gray-800 mt-auto'>
+        <span>Lowest price: {{ lowest_price | money }}</span>
+        {% if highest_compare_at and highest_compare_at > lowest_price %}
+          <span class='line-through text-gray-400'>{{ highest_compare_at | money }}</span>
+        {% endif %}
+        {% if max_discount > 0 %}
+          <span class='text-sm text-red-500'> (Up to {{ max_discount | floor }}% off)</span>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</div>

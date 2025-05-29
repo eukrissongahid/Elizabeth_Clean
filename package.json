@@ -5,7 +5,9 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "watch": "webpack --config webpack.config.js --watch"
+    "watch": "concurrently \"webpack --config webpack.config.js --watch\" \"npx @tailwindcss/cli -i ./src/tailwind.css -o ./assets/application.css --watch\"",
+    "format": "prettier --write 'sections/**/*.{liquid,js,css,json}' 'templates/**/*.{liquid,js,css,json}' 'snippets/**/*.{liquid,js,css,json}' 'src/**/*.{liquid,js,css,json}'",
+    "format-check": "prettier --check 'sections/**/*.{liquid,js,css,json}' 'templates/**/*.{liquid,js,css,json}' 'snippets/**/*.{liquid,js,css,json}' 'src/**/*.{liquid,js,css,json}'"
   },
   "repository": {
     "type": "git",

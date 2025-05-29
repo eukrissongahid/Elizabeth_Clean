@@ -1,46 +1,69 @@
-{% assign main_menu_linklist = linklists[section.settings.menu].links %}
+{% if section.settings.menu and linklists[section.settings.menu] %}
+  {% assign main_menu_linklist = linklists[section.settings.menu].links %}
+{% else %}
+  {% assign main_menu_linklist = blank %}
+{% endif %}
 
-<div class="relative bg-white" x-data="{ mobileMenuOpen: false, searchBarOpen: false }">
-  <div class="mx-auto px-4 sm:px-6">
-    <div class="flex justify-between items-center py-6 md:justify-start md:space-x-10">
+<div class='relative bg-white' x-data='{ mobileMenuOpen: false, searchBarOpen: false }'>
+  <div class='mx-auto px-4 sm:px-6'>
+    <div class='flex justify-between items-center pt-3 pb-6 md:justify-start md:space-x-10'>
       <!-- STORE NAME / STORE LOGO -->
-      <div class="flex justify-start lg:flex-1 truncate">
-        <h1 class="text-xl font-bold truncate">{{ shop.name }}</h1>
+      <div class='flex justify-start lg:flex-1 truncate items-center'>
+        <!-- Logo image (hidden on small screens) -->
+        <a
+          href='{{ section.settings.logo_link | default: '/' }}'
+          class='inline-flex items-center cursor-pointer'
+        >
+          {% if section.settings.logo != blank %}
+            <img
+              src='{{ section.settings.logo | img_url: "240x" }}'
+              alt='{{ shop.name }}'
+              class='hidden md:block h-24 w-auto'
+            >
+          {% endif %}
+          <h1 class="block md:hidden text-xl font-bold truncate ml-2 tracking-wide uppercase text-gray-800">
+            {{ shop.name | upcase }}
+          </h1>
+        </a>
       </div>
-      <div class="-mr-2 -my-2 ml-3 md:hidden">
+      <div class='-mr-2 -my-2 ml-3 md:hidden'>
         <button
-          x-on:click="mobileMenuOpen = true"
-          type="button"
-          class="bg-white p-2 inline-flex items-center justify-center focus:outline-none"
+          x-on:click='mobileMenuOpen = true'
+          type='button'
+          class='bg-white p-2 inline-flex items-center justify-center focus:outline-none cursor-pointer'
         >
           {% render 'icon-menu' %}
         </button>
       </div>
       <!-- NAVIGATION MENU -->
-      <nav x-data="{ open: false }" class="hidden md:flex space-x-10">
+      <nav x-data='{ open: false }' class='hidden md:flex space-x-10'>
         {% for link in main_menu_linklist %}
           {% if link.links != blank %}
-            <div class="relative">
+            <div class='relative'>
               <button
-                x-on:click="open = ! open"
-                type="button"
-                class="inline-flex items-center text-base text-gray-500 hover:text-gray-900"
+                x-on:click='open = ! open'
+                type='button'
+                class='inline-flex items-center text-base text-gray-500 hover:text-gray-900 cursor-pointer'
               >
                 {{ link.title }}
                 {% render 'icon-dropdown-arrow' %}
               </button>
               <div
-                x-show="open"
-                @click.away="open = false"
-                class="absolute z-10 -ml-5 mt-5 transform px-2 w-screen max-w-md sm:px-0 lg:ml-0 lg:left-1/2 lg:-translate-x-1/2"
+                x-show='open'
+                x-cloak
+                @click.away='open = false'
+                class='absolute z-10 -ml-5 mt-5 transform px-2 w-screen max-w-md sm:px-0 lg:ml-0 lg:left-1/2 lg:-translate-x-1/2'
               >
-                <div class="shadow-lg border ring-black ring-opacity-5 overflow-hidden rounded-lg">
-                  <div class="relative grid gap-6 bg-white px-5 py-6 sm:gap-8 sm:p-8">
+                <div class='shadow-lg border border-gray-300 overflow-hidden rounded-md'>
+                  <div class='relative grid gap-6 bg-white px-5 py-6 sm:gap-8 sm:p-8'>
                     {% for childlink in link.links %}
                       <!-- CREATE THE SUBLINK -->
-                      <a href="{{ childlink.url }}" class="-m-3 p-3 flex items start rounded-lg hover:bg-gray-100">
-                        <div class="ml-4">
-                          <p class="text-gray-900 text-base font-medium">{{ childlink.title }}</p>
+                      <a
+                        href='{{ childlink.url }}'
+                        class='-m-3 p-3 flex items start rounded-md hover:bg-gray-100'
+                      >
+                        <div class='ml-4'>
+                          <p class='text-base text-gray-500 hover:text-gray-900'>{{ childlink.title }}</p>
                         </div>
                       </a>
                     {% endfor %}
@@ -49,70 +72,96 @@
               </div>
             </div>
           {% else %}
-            <div class="relative">
-              <a href="{{ link.url }}" class="text-base text-gray-500 hover:text-gray-900">{{ link.title }}</a>
+            <div class='relative'>
+              <a href='{{ link.url }}' class='text-base text-gray-500 hover:text-gray-900'>
+                {{- link.title -}}
+              </a>
             </div>
           {% endif %}
         {% endfor %}
       </nav>
-      <div class="hidden md:flex items-center justify-end md:flex-1 space-x-5">
-        <button x-on:click="searchBarOpen = true" type="button" class="whitespace-nowrap text-base text-gray-500 hover:text-gray-900">
+      <div class='hidden md:flex items-center justify-end md:flex-1 space-x-5'>
+        <button
+          x-on:click='searchBarOpen = true'
+          type='button'
+          class='whitespace-nowrap text-base text-gray-500 hover:text-gray-900 cursor-pointer'
+        >
           {% render 'icon-search' %}
         </button>
-        <a href="{{ routes.cart_url }}" class="whitespace-nowrap text-base text-gray-500 hover:text-gray-900">
+        <a
+          href='{{ routes.cart_url }}'
+          class='whitespace-nowrap text-base text-gray-500 hover:text-gray-900'
+        >
           {% render 'icon-shopping-bag' %}
         </a>
         {% if shop.customer_accounts_enabled %}
-          <a href="{{ routes.account_login_url }}" class="text-base text-gray-500 hover:text-gray-900">Login</a>
-          <a href="{{ routes.account_register_url }}" class="text-base text-gray-500 hover:text-gray-900">Register</a>
+          <a
+            href='{{ routes.account_login_url }}'
+            class='text-base text-gray-500 hover:text-gray-900'
+            >Login</a
+          >
+          <a
+            href='{{ routes.account_register_url }}'
+            class='text-base text-gray-500 hover:text-gray-900'
+            >Register</a
+          >
         {% endif %}
       </div>
     </div>
   </div>
-  <div x-show="mobileMenuOpen" class="absolute z-10 top-0 inset-x-0 p-2 transform origin-top-left md:hidden">
-    <div class="shadow-lg rounded-lg ring-1 ring-black ring-opacity-5 bg-white w-full">
-      <div class="p-5 divide-y-2 divide-gray-50">
+  <div
+    x-show='mobileMenuOpen'
+    class='absolute z-10 top-0 inset-x-0 p-2 transform origin-top-left md:hidden'
+  >
+    <div class='shadow-lg rounded-md border border-gray-300 bg-white w-full'>
+      <div class='p-5 divide-y-2 divide-gray-50'>
         <!-- MOBILE MENU HEADER TITLE PLUS CLOSE BUTTON -->
-        <div class="flex items-center justify-between pb-3">
+        <div class='flex items-center justify-between pb-3'>
           <div>
-            <h1 class="text-lg text-gray-500">{{ section.settings.mobile_menu_title }}</h1>
+            <h1 class='text-lg text-gray-500'>{{ section.settings.mobile_menu_title }}</h1>
           </div>
-          <div class="-mr-2">
-            <button x-on:click="mobileMenuOpen = false" type="button" class="bg-white rounded-md p-2 text-gray-500">
+          <div class='-mr-2'>
+            <button
+              x-on:click='mobileMenuOpen = false'
+              type='button'
+              class='bg-white rounded-md p-2 text-gray-500 cursor-pointer'
+            >
               {% render 'icon-close' %}
             </button>
           </div>
         </div>
         <!-- NAVIGATION LINKS FOR MOBILE MENU -->
-        <div class="pt-3">
-          <nav class="grid gap-y-7">
+        <div class='pt-3'>
+          <nav class='grid gap-y-7'>
             {% for link in main_menu_linklist %}
               {% assign link_handle = link.handle | replace: '-', '_' %}
               {% if link.links != blank %}
-                <div x-data="{ {{ link_handle }}: false }" class="relative">
+                <div x-data='{ {{ link_handle }}: false }' class='relative'>
                   <button
-                    x-on:click="{{ link_handle }} = ! {{ link_handle }}"
-                    type="button"
-                    class="text-base text-gray-500 hover:text-gray-900 flex items-center justify-between w-full"
+                    x-on:click='{{ link_handle }} = ! {{ link_handle }}'
+                    type='button'
+                    class='p-3 text-base text-gray-500 hover:text-gray-900 hover:bg-gray-50 flex items-center justify-between rounded-md w-full cursor-pointer'
                   >
                     <div>{{ link.title }}</div>
                     {% render 'icon-dropdown-arrow' %}
                   </button>
-                  <div x-show="{{ link_handle }}" class="grid gap-y-7 py-3">
+                  <div x-show='{{ link_handle }}' class='grid gap-y-7 py-3'>
                     {% for childlink in link.links %}
                       <a
-                        href="#"
-                        class="-m-3 p-3 mt-2 flex items-center rounded-md text-gray-500 hover:text-gray-900 hover:bg-gray-50"
+                        href='{{ childlink.url }}'
+                        class='p-3 mt-2 flex items-center rounded-md text-base text-gray-500 hover:text-gray-900 hover:bg-gray-50'
                       >
-                        <span class="ml-3 text-base font-medium text-gray-500">{{ childlink.title }}</span>
+                        <span class='ml-3 text-base font-medium text-gray-500'>
+                          {{- childlink.title -}}
+                        </span>
                       </a>
                     {% endfor %}
                   </div>
                 </div>
               {% else %}
                 <a
-                  href="#"
-                  class="-m-3 p-3 flex items-center rounded-md text-gray-500 hover:text-gray-900 hover:bg-gray-50"
+                  href='#'
+                  class='p-3 flex items-center rounded-md text-base text-gray-500 hover:text-gray-900 hover:bg-gray-50'
                 >
                   {{ link.title }}
                 </a>
@@ -124,15 +173,24 @@
     </div>
   </div>
 
-  <div x-show="searchBarOpen" class="w-full absolute top-0 bg-white border">
-    <button type="button" x-on:click="searchBarOpen = false" class="absolute top-0 right-0 mr-5 mt-5 text-gray-500">
+  <div x-show='searchBarOpen' x-cloak class='w-full absolute top-0 px-5 bg-white border border-gray-300'>
+    <button
+      type='button'
+      x-on:click='searchBarOpen = false'
+      class='absolute top-0 right-0 mr-5 mt-5 text-gray-500 cursor-pointer'
+    >
       {% render 'icon-close' %}
     </button>
-    <div class="h-40 flex justify-center items-center">
-      <form action="{{ routes.search_url }}" method="get" class="flex-auto">
-        <div class="relative text-gray-500 px-10 border">
-          <input type="search" name="q" placeholder="search" class="w-full bg-white h-10 px-5 pr-10 rounded-full text-sm focus:outline-none">
-          <button type="submit" class="absolute right-0 top-0 mt-2 mr-2 md:mr-20">
+    <div class='h-40 flex justify-center items-center'>
+      <form action='{{ routes.search_url }}' method='get' class='flex-auto'>
+        <div class='relative text-gray-500 px-3 border border-gray-300 rounded-md'>
+          <input
+            type='text'
+            name='q'
+            placeholder='search products'
+            class='w-full bg-white h-10 text-sm focus:outline-none'
+          >
+          <button type='submit' class='absolute right-0 top-0 mt-2 mr-2 md:mr-5 cursor-pointer'>
             {% render 'icon-search' %}
           </button>
         </div>
@@ -145,6 +203,18 @@
 {
   "name": "Header",
   "settings": [
+    {
+      "type": "image_picker",
+      "id": "logo",
+      "label": "Logo image"
+    },
+    {
+      "type": "url",
+      "id": "logo_link",
+      "label": "Logo Link URL",
+      "default": "/",
+      "info": "URL where the logo and mobile title will redirect when clicked."
+    },
     {
       "type": "text",
       "id": "mobile_menu_title",

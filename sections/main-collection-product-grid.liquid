@@ -1,0 +1,52 @@
+{% comment %}
+  <div class='flex mx-4 w-full h-full bg-white'>
+    <div id='ProductGrid'>
+      {% paginate collection.products by section.settings.number_of_product_per_page %}
+        <h1 class='text-3xl text-start mb-8'>{{ collection.title }}</h1>
+        <div class='flex flex-wrap'>
+          {% for product in collection.products %}
+            {% render 'product-card', product_product: product %}
+          {% else %}
+            <p class='text-gray-600'>There are no products found!</p>
+          {% endfor %}
+        </div>
+
+        {% render 'pagination', pagination: paginate %}
+      {% endpaginate %}
+    </div>
+  </div>
+{% endcomment %}
+
+<main class='w-full lg:flex-1 p-4 bg-white'>
+  <div class='w-full h-ful p-4 lg:p-6 bg-white'>
+    <div id='ProductGrid' class='mx-auto'>
+      {% paginate collection.products by 4 %}
+        <h1 class='text-3xl font-semibold mb-8 text-orange-600'>{{ collection.title }}</h1>
+
+        <div class='flex flex-wrap justify-center md:justify-start gap-4'>
+          {% for product in collection.products %}
+            {% render 'product-card-new', product_product: product %}
+          {% else %}
+            <p class='text-gray-600 col-span-full text-center uppercase font-semibold'>There are no products found!</p>
+          {% endfor %}
+        </div>
+
+        {% render 'pagination', pagination: paginate %}
+      {% endpaginate %}
+    </div>
+  </div>
+</main>
+
+{% schema %}
+{
+  "name": "Collection Product Grid",
+  "settings": [
+    {
+      "type": "number",
+      "id": "number_of_product_per_page",
+      "default": 5,
+      "label": "Number of products per page"
+    }
+  ]
+}
+{% endschema %}

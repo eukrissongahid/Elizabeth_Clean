@@ -1,11 +1,73 @@
 {% if pagination.pages > 1 %}
-  <nav role="navigation" class="flex justify-center items-center my-8">
-      {% if pagination.previous %}
-          <a href="{{ pagination.previous.url }}" class="border border-gray-600 text-gray-600 hover:bg-gray-600 hover:text-white px-8 py-3 mx-1 rounded-sm font-medium">Previous</a>
-      {% endif %}
+  <nav role="navigation" class="flex justify-center lg:justify-start items-center my-8" aria-label="Pagination">
+    <ul class="inline-flex items-center -space-x-px text-sm">
 
-      {% if pagination.next %}
-          <a href="{{ pagination.next.url }}" class="border border-gray-600 text-gray-600 hover:bg-gray-600 hover:text-white px-8 py-3 mx-1 rounded-sm font-medium">Next</a>
-      {% endif %}
+      <!-- Previous Button -->
+      <li>
+        {% if pagination.previous %}
+          <a href="{{ pagination.previous.url }}"
+             class="flex items-center justify-center px-3 h-9 ms-0 leading-tight text-gray-500 bg-white border border-e-0 border-gray-300 rounded-s-lg hover:bg-gray-100 hover:text-gray-700">
+            Previous
+          </a>
+        {% else %}
+          <span
+            class="flex items-center justify-center px-3 h-9 ms-0 leading-tight text-gray-300 bg-gray-100 border border-e-0 border-gray-300 rounded-s-lg cursor-not-allowed">
+            Previous
+          </span>
+        {% endif %}
+      </li>
+
+      <!-- Page Numbers -->
+      {% for part in pagination.parts %}
+        <li>
+          {% if part.is_link %}
+            <a href="{{ part.url }}"
+               class="flex items-center justify-center px-3 h-9 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700">
+              {{ part.title }}
+            </a>
+          {% elsif part.title == pagination.current_page %}
+            <span
+              aria-current="page"
+              class="flex items-center justify-center px-3 h-9 text-orange-600 border border-gray-300 bg-orange-50 hover:bg-orange-100 hover:text-orange-700 font-semibold">
+              {{ part.title }}
+            </span>
+          {% else %}
+            <span
+              class="flex items-center justify-center px-3 h-9 leading-tight text-gray-400 bg-white border border-gray-300 cursor-not-allowed">
+              {{ part.title }}
+            </span>
+          {% endif %}
+        </li>
+      {% endfor %}
+
+      <!-- Next Button -->
+      <li>
+        {% if pagination.next %}
+          <a href="{{ pagination.next.url }}"
+             class="flex items-center justify-center px-3 h-9 leading-tight text-gray-500 bg-white border border-gray-300 rounded-e-lg hover:bg-gray-100 hover:text-gray-700">
+            Next
+          </a>
+        {% else %}
+          <span
+            class="flex items-center justify-center px-3 h-9 leading-tight text-gray-300 bg-gray-100 border border-gray-300 rounded-e-lg cursor-not-allowed">
+            Next
+          </span>
+        {% endif %}
+      </li>
+
+    </ul>
   </nav>
 {% endif %}
+
+
+{% comment %} {% if pagination.pages > 1 %}
+  <nav role="navigation" class="pagination flex justify-center items-center my-8">
+    {% if pagination.previous %}
+      <a href="{{ pagination.previous.url }}" class="pagination-link" data-page="{{ pagination.previous.page }}">Previous</a>
+    {% endif %}
+
+    {% if pagination.next %}
+      <a href="{{ pagination.next.url }}" class="pagination-link" data-page="{{ pagination.next.page }}">Next</a>
+    {% endif %}
+  </nav>
+{% endif %} {% endcomment %}

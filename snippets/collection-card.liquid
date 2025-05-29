@@ -1,0 +1,35 @@
+<div class='w-full py-6 px-3'>
+  <div class='border bg-white shadow-lg rounded-lg overflow-hidden'>
+    <a href='{{ collection_collection.url }}'>
+      {% if collection_collection.image %}
+        <div class='h-60 overflow-hidden lg-max-h-60 border-b border-gray-300'>
+          <img
+            class='w-full h-full object-cover transition duration-1000 ease-in-out hover:scale-105 transform'
+            src='{{ collection_collection.featured_image | img_url: 'medium' }}'
+            alt='{{ collection_collection.featured_image.alt }}'
+          >
+        </div>
+      {% else %}
+        <div class='h-60 overflow-hidden lg-max-h-60 border-b border-gray-300'>
+          {{ 'product-1' | placeholder_svg_tag: 'w-full h-full object-cover bg-gray-100' }}
+        </div>
+      {% endif %}
+    </a>
+    <div class='flex flex-col p-4 h-[135px]'>
+      <a
+        href='{{ collection_collection.url }}'
+        class='text-xl text-gray-900 font-semibold uppercase line-clamp-1 flex-shrink'
+        title='{{ collection_collection.title }}'
+      >
+        {{ collection_collection.title }}
+      </a>
+      <a
+        href='{{ collection_collection.url }}'
+        class='text-xs font-light text-gray-500 line-clamp-3 flex-grow'
+      >
+        {{ collection_collection.description }}
+      </a>
+      <p class='text-md font-semibold text-gray-800 mt-auto'>{{ collection_collection.all_products_count }} Products</p>
+    </div>
+  </div>
+</div>

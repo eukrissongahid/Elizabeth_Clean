@@ -1,18 +1,49 @@
-<div class="w-full py-6 px-3">
-  <div class="border bg-white shadow-lg rounded-lg overflow-hidden">
-    <a href="{{ product_product.url }}">
+<div class='w-[300px] py-6 px-3'>
+  <div class='border bg-white shadow-lg rounded-lg overflow-hidden'>
+    <a href='{{ product_product.url }}'>
       {% if product_product.featured_image %}
-        <div class="h-80 overflow-hidden">
-          <img class="w-full h-full object-cover transition duration-1000 ease-in-out hover:scale-105 transform" src="{{ product_product.featured_image | img_url: 'medium' }}" alt="{{ product_product.featured_image.alt }}">
+        <div class='h-60 overflow-hidden lg-max-h-60 border-b border-gray-300'>
+          <img
+            class='w-full h-full object-cover transition duration-1000 ease-in-out hover:scale-105 transform'
+            src='{{ product_product.featured_image | img_url: 'medium' }}'
+            alt='{{ product_product.featured_image.alt }}'
+          >
         </div>
       {% else %}
-        {{ 'product-1' | placeholder_svg_tag: 'w-full h-full object-cover bg-gray-100' }}
+        <div class='h-60 overflow-hidden lg-max-h-60 border-b border-gray-300'>
+          {{ 'product-1' | placeholder_svg_tag: 'w-full h-full object-cover bg-gray-100' }}
+        </div>
       {% endif %}
     </a>
-    <div class="flex flex-col p-4">
-      <span class="text-sm text-gray-400">{{ product_product.vendor }}</span>
-      <a href="{{ product_product.url }}" class="text-gray-700 uppercase font-medium">{{ product_product.title }}</a>
-      <p class="text-gray-500">{{ product_product.price | money }}</p>
+    <div class='flex flex-col p-4 h-[135px]'>
+      <a
+        href='{{ product_product.url }}'
+        class='text-xl text-gray-900 font-semibold uppercase line-clamp-2 flex-shrink'
+        title='{{ product_product.title }}'
+      >
+        {{ product_product.title }}
+      </a>
+      <a
+        href='{{ product_product.url }}'
+        class='text-xs font-light text-gray-500 line-clamp-3 flex-grow'
+      >
+        {{ product_product.description }}
+      </a>
+      {% assign total_inventory = 0 %}
+      {% for variant in product_product.variants %}
+        {% if variant.available and variant.inventory_management %}
+          {% assign total_inventory = total_inventory | plus: variant.inventory_quantity %}
+        {% endif %}
+      {% endfor %}
+
+      <p class='text-md text-red-600 semi-bold mt-auto'>
+        {% if total_inventory > 0 %}
+          Only {{ total_inventory }} left in stock!
+        {% else %}
+          Out of stock
+        {% endif %}
+      </p>
+      {% comment %} <p class='text-gray-500 mt-auto'>{{ product_product.price | money }}</p> {% endcomment %}
     </div>
   </div>
 </div>

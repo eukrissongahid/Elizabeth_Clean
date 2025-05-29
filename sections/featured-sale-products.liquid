@@ -1,0 +1,76 @@
+<div class='flex flex-col items-center py-20 my-8'>
+  <h1 class='text-center text-3xl mb-7 uppercase'>{{ section.settings.title }}</h1>
+
+  <div class='max-w-7xl mx-auto'>
+    <div class='grid grid-cols-1 md:grid-cols-4 gap-4'>
+      {% assign sale_products = collections[section.settings.featured_sale_collection].products
+        | where: 'compare_at_price'
+        | where: 'available', true
+      %}
+
+      {% for product in sale_products %}
+        {% assign original_price = product.compare_at_price | default: 0 %}
+        {% assign current_price = product.price | default: 0 %}
+
+        {% if original_price > current_price and original_price > 0 %}
+          {% assign discount = 100
+            | times: current_price
+            | divided_by: original_price
+            | minus: 100
+            | abs
+          %}
+          {% if discount >= section.settings.min_discount %}
+            {% render 'sale-product-card', product_product: product %}
+          {% endif %}
+        {% endif %}
+      {% endfor %}
+
+      {% if sale_products.size == 0 %}
+        {% for item in (1..4) %}
+          {% render 'product-card-placeholder' %}
+        {% endfor %}
+      {% endif %}
+    </div>
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "Sale Products",
+  "settings": [
+    {
+      "type": "text",
+      "id": "title",
+      "default": "Sale Products",
+      "label": "Title"
+    },
+        {
+      "type": "collection",
+      "id": "featured_sale_collection",
+      "label": "Collection"
+    },
+    {
+      "type": "range",
+      "id": "number_of_products_to_show",
+      "min": 4,
+      "max": 12,
+      "default": 4,
+      "label": "Number of products to show (for Featured)"
+    },
+    {
+      "type": "range",
+      "id": "min_discount",
+      "min": 10,
+      "max": 90,
+      "step": 5,
+      "default": 10,
+      "label": "Minimum Discount (%) for Sale Mode"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Sale Products"
+    }
+  ]
+}
+{% endschema %}

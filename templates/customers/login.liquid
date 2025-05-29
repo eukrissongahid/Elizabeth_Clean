@@ -2,27 +2,23 @@
 
 <h2>Login</h2>
 {% form 'customer_login' %}
+  {{ form.errors | default_errors }}
 
-{{ form.errors | default_errors }}
+  <label for='customer_email'>Email Address</label>
+  <input type='email' name='customer[email]'>
 
-<label for="customer_email">Email Address</label>
-<input type="email" name="customer[email]" />
+  <label for='customer_password'>Password</label>
+  <input type='password' name='customer[password]'>
 
-<label for="customer_password">Password</label>
-<input type="password" name="customer[password]" />
-
-<input type="submit" value="Sign In" />
-
+  <input type='submit' value='Sign In'>
 {% endform %}
 
 <h2>Forgot Password</h2>
 {% form 'recover_customer_password' %}
+  {{ form.errors | default_errors }}
 
-{{ form.errors | default_errors }}
+  <label for='customer_email'>Email Address</label>
+  <input type='email' name='email'>
 
-<label for="customer_email">Email Address</label>
-<input type="email" name="email" />
-
-<input type="submit" value="Submit" />
-
+  <input type='submit' value='Submit'>
 {% endform %}

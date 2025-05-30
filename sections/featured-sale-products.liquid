@@ -20,7 +20,7 @@
             | abs
           %}
           {% if discount >= section.settings.min_discount %}
-            {% render 'sale-product-card', product_product: product %}
+            {% render 'product-card-new', product_product: product %}
           {% endif %}
         {% endif %}
       {% endfor %}

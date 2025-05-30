@@ -20,11 +20,11 @@ class ShopCarousel extends HTMLElement {
   /** Carousel heights by viewport breakpoint */
   /** Carousel heights by viewport breakpoint in pixels */
   static CAROUSEL_HEIGHTS_BY_BREAKPOINT = {
-    mobile: 200,      // <= 480px
-    tablet: 250,      // <= 768px
-    desktop: 400,     // default
+    mobile: 200, // <= 480px
+    tablet: 250, // <= 768px
+    desktop: 400, // default
     largeDesktop: 600, // >= 1400px
-    ultraWide: 800,   // >= 1920px
+    ultraWide: 800 // >= 1920px
   };
   /** Navigation button size in pixels */
   static NAV_BUTTON_SIZE_PX = 40;
@@ -68,6 +68,11 @@ class ShopCarousel extends HTMLElement {
     this.autoplayEnabled = autoplay;
     this.autoplaySpeed = speed;
 
+    if (!Array.isArray(slides) || slides.length === 0) {
+      this.shadowRoot.innerHTML = `<style>:host { display: none; }</style>`;
+      return;
+    }
+
     this.render(slides);
     this.addKeyboardNavigation();
     this.addTouchSupport();
@@ -82,13 +87,17 @@ class ShopCarousel extends HTMLElement {
    */
   escapeHTML(str) {
     return (
-      str?.replace(/[&<>"']/g, (m) => ({
-        '&': '&amp;',
-        '<': '&lt;',
-        '>': '&gt;',
-        '"': '&quot;',
-        "'": '&#39;',
-      }[m])) ?? ''
+      str?.replace(
+        /[&<>"']/g,
+        (m) =>
+          ({
+            '&': '&amp;',
+            '<': '&lt;',
+            '>': '&gt;',
+            '"': '&quot;',
+            "'": '&#39;'
+          })[m]
+      ) ?? ''
     );
   }
 
@@ -176,7 +185,9 @@ class ShopCarousel extends HTMLElement {
     // Build slide HTML with optional links and escaped attributes for safety
     const slidesHtml = slidesWithDuplicate
       .map(({ image, alt, link }) => {
-        const escapedImage = image ? `<img src="${this.escapeHTML(image)}" alt="${this.escapeHTML(alt ?? 'Slide')}" />` : '';
+        const escapedImage = image
+          ? `<img src="${this.escapeHTML(image)}" alt="${this.escapeHTML(alt ?? 'Slide')}" />`
+          : '';
         const linkStart = link ? `<a href="${this.escapeHTML(link)}">` : '';
         const linkEnd = link ? `</a>` : '';
         return `<div class="slide">${linkStart}${escapedImage}${linkEnd}</div>`;

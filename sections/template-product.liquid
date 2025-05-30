@@ -91,11 +91,11 @@
     // Add to Cart button handler
     document.querySelector('button.bg-orange-500').addEventListener('click', async () => {
       if (!selectedVariantId) {
-        alert('Please select a valid variant.');
+        showToast({ type: 'danger', message: 'Please select a valid variant.' });
         return;
       }
       if (selectedQuantity <= 0) {
-        alert('Please add a quantity.');
+        showToast({ type: 'danger', message: 'Please add a quantity.' });
         return;
       }
       try {
@@ -105,13 +105,15 @@
           body: JSON.stringify({ id: selectedVariantId, quantity: selectedQuantity })
         });
         if (response.ok) {
-          alert('Added to cart!');
+          showToast({ type: 'success', message: 'Added to cart!' });
+          // alert('Added to cart!');
+          document.querySelector('cart-icon')?.update();
         } else {
           const error = await response.json();
-          alert(`Error: ${error.description}`);
+          showToast({ type: 'danger', message: `Error: ${error.description}` });
         }
       } catch (err) {
-        alert('An error occurred while adding to cart.');
+        showToast({ type: 'danger', message: 'An error occurred while adding to cart.' });
         console.error(err);
       }
     });
@@ -129,6 +131,7 @@
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ id: selectedVariantId, quantity: selectedQuantity })
         });
+        document.querySelector('cart-icon')?.update();
         window.location.href = '/checkout';
       } catch (err) {
         alert('An error occurred during checkout.');

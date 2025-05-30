@@ -6,7 +6,7 @@
       {% for product in section.settings.featured_collection.products
         limit: section.settings.number_of_products_to_show
       %}
-        {% render 'product-card', product_product: product %}
+        {% render 'product-card-new', product_product: product %}
       {% else %}
         {% for item in (1..4) %}
           {% render 'product-card-placeholder' %}

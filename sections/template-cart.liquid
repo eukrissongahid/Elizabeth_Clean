@@ -1,168 +1,136 @@
-{% if cart.item_count > 0 %}
-  <div class='p-4'>
-    <div class='max-w-6xl flex flex-col my-10 mx-auto'>
-      <div class='flex items-end justify-between my-5'>
-        <h1 class='text-3xl'>Your cart</h1>
-        <a
-          href='{{ routes.all_products_collection_url }}'
-          class='text-blue-600 hover:text-blue-800 font-medium underline'
-          >Continue shopping</a
-        >
-      </div>
+<div id='cart-content' class='p-4' style='{% if cart.item_count == 0 %}display:none;{% endif %}'>
+  <div class='max-w-6xl flex flex-col my-10 mx-auto'>
+    <div class='flex items-end justify-between my-5'>
+      <h1 class='text-3xl font-semibold text-orange-700 uppercase'>cart</h1>
+      <a
+        href='{{ routes.all_products_collection_url }}'
+        class='text-blue-600 hover:text-blue-800 font-medium underline'
+        >Continue shopping</a
+      >
     </div>
+  </div>
 
-    <div class='max-w-6xl flex flex-col my-10 mx-auto'>
-      <form action='{{ routes.cart_url }}' method='post' novalidate>
-        <table class='table-auto divide-y divide-gray-200 my-4 w-full'>
-          <thead>
-            <tr>
-              <th class='px-6 py-3 text-left text-sm font-medium text-gray-500'>Item</th>
-              <th class='px-6 py-3 text-left text-sm font-medium text-gray-500'>Quantity</th>
-              <th class='px-6 py-3 text-left text-sm font-medium text-gray-500'>Total Price</th>
-              <th class='px-6 py-3 text-left text-sm font-medium text-gray-500'></th>
-            </tr>
-          </thead>
-          <tbody>
-            {% for item in cart.items %}
-              <tr class='table-row'>
-                <td class='py-4 px-2'>
-                  <div class='flex items-start gap-4'>
-                    <a href='{{ item.url }}'>
-                      {% if item.image %}
-                        <img
-                          src='{{ item.image | img_url: 'small' }}'
-                          alt='{{ item.title | escape }}'
-                          class='w-20 h-20 object-cover border'
-                        >
-                      {% else %}
-                        {{ 'product-1' | placeholder_svg_tag: 'w-20 h-20 object-cover border' }}
-                      {% endif %}
-                    </a>
-                    <div class='flex flex-col justify-start'>
-                      <a href='{{ item.url }}' class='my-1'>
-                        {{- item.product.title | truncatewords: 5 -}}
-                      </a>
-                      <span class='text-sm text-gray-500 my-1'>{{ item.variant.title }}</span>
-                      <span class='text-sm text-gray-500'>
-                        {{- item.final_line_price | divided_by: item.quantity | money }} each</span
-                      >
-                    </div>
-                  </div>
-                </td>
-                <td class='py-4 px-2'>
-                  <input
-                    type='number'
-                    name='updates[]'
-                    value='{{ item.quantity }}'
-                    min='1'
-                    id='updates_{{ forloop.index }}'
-                    class='w-20 border p-2'
-                  >
-                </td>
-                <td class='py-4 px-2'>
-                  {{ item.line_price | money }}
-                </td>
-                <td class='py-4 px-2 text-center'>
-                  <a
-                    href='{{ routes.cart_change_url }}?line={{ forloop.index }}&quantity=0'
-                    class='text-red-500 text-lg font-bold hover:text-red-700'
-                    title='Remove item'
-                    >&times;</a
-                  >
-                </td>
-              </tr>
-            {% endfor %}
-          </tbody>
-        </table>
-        <div class='flex flex-col md:flex-row items-center justify-between'>
-          <div class='w-full my-4'>
-            <div class='flex flex-col items-start'>
-              <label for='cart_notes' class='my-1'>Cart notes</label>
-              <textarea
-                name='note'
-                id='cart_notes'
-                class='w-full md:max-w-lg resize-none border h-20'
-              ></textarea>
-            </div>
-          </div>
-          <div class='w-full my-4 md:w-80'>
-            {% for block in section.blocks %}
-              {% case block.type %}
-                {% when 'subtotal' %}
-                  <p class='text-sm text-gray-600 mb-4'>
-                    Have a discount code? You can apply it at checkout.
-                  </p>
+  <div class='max-w-6xl flex flex-col my-10 mx-auto'>
+    <form action='{{ routes.cart_url }}' method='post' novalidate>
+      <!-- Header row: hidden on small screens -->
+      <div class='hidden md:flex border-b border-orange-400 mb-2 font-medium text-gray-500'>
+        <div class='flex-grow px-4 py-2'>Item</div>
+        <div class='w-32 px-4 py-2'>Quantity</div>
+        <div class='w-32 px-4 py-2'>Total</div>
+        <div class='w-12 px-4 py-2'></div>
+      </div>
 
-                  {% assign subtotal = cart.subtotal_price
-                    | default: cart.items_subtotal_price
-                    | default: cart.total_price
-                  %}
-
-                  <h3 class='text-xl'>Subtotal: {{ subtotal | money }}</h3>
-
-                  {% if cart.tax_lines.size > 0 %}
-                    <p class='text-sm mt-2'>Tax: {{ cart.total_tax | money }}</p>
-                    <p class='text-lg font-semibold'>Total: {{ cart.total_price | money }}</p>
-                  {% else %}
-                    <p class='text-sm text-gray-500 mt-2'>
-                      Taxes and shipping calculated at checkout.
-                    </p>
-                  {% endif %}
-                {% when 'update_button' %}
-                  <div class='my-2'>
-                    <button
-                      type='submit'
-                      name='update'
-                      class='w-full p-3 border border-gray-600 text-gray font-medium hover:bg-gray-600 hover:text-white'
-                    >
-                      Update
-                    </button>
-                  </div>
-                {% when 'checkout_button' %}
-                  <div class='my-2'>
-                    <button
-                      type='submit'
-                      name='checkout'
-                      class='w-full p-3 border border-gray-600 font-medium bg-gray-600 text-white'
-                    >
-                      Checkout
-                    </button>
-                    <div class='mt-2 flex items-center gap-2 text-sm text-gray-500'>
-                      <svg
-                        xmlns='http://www.w3.org/2000/svg'
-                        class='h-4 w-4 text-green-600'
-                        fill='none'
-                        viewBox='0 0 24 24'
-                        stroke='currentColor'
-                      >
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 11c0-1.104.896-2 2-2s2 .896 2 2v1h-4v-1zM5 13h14v6a2 2 0 01-2 2H7a2 2 0 01-2-2v-6z" />
-                      </svg>
-                      <span>Secure checkout</span>
-                    </div>
-                  </div>
-                {% else %}
-
-              {% endcase %}
-            {% endfor %}
+      <!-- Cart items -->
+      <div id='cart-items' class='divide-y divide-orange-400'>
+        {% for item in cart.items %}
+          <cart-item
+            variant-id='{{ item.variant_id }}'
+            quantity='{{ item.quantity }}'
+            product-url='{{ item.url }}'
+            product-title='{{ item.product.title | escape }}'
+            variant-title='{{ item.variant.title | escape }}'
+            image-src='{{ item.image | img_url: 'small' }}'
+            line-price='{{ item.line_price | money }}'
+            final-price='{{ item.final_line_price | divided_by: item.quantity | money }}'
+            line-index='{{ forloop.index0 }}'
+          ></cart-item>
+        {% endfor %}
+      </div>
+      <div class='flex flex-col md:flex-row items-center justify-between sm:px-4 px-2'>
+        <div class='w-full my-4'>
+          <div class='flex flex-col items-start'>
+            <label for='cart_notes' class='my-1'>Cart notes</label>
+            <textarea
+              name='note'
+              id='cart_notes'
+              class='w-full md:max-w-lg resize-none border border-gray-300 rounded-sm outline-none h-20'
+            ></textarea>
           </div>
         </div>
-      </form>
-    </div>
-  </div>
-{% else %}
-  <div class='max-w-6xl h-60 my-4 mx-auto flex items-center justify-center'>
-    <div class='text-center'>
-      <h1 class='text-3xl my-4'>Your cart is empty</h1>
-      <div class='my-4 py-4'>
-        <a
-          href='{{ routes.all_products_collection_url }}'
-          class='border border-gray-600 text-white bg-gray-600 px-8 py-3'
-          >Continue shopping</a
-        >
+        <div class='w-full my-4 md:w-80'>
+          {% for block in section.blocks %}
+            {% case block.type %}
+              {% when 'subtotal' %}
+                <p class='text-sm text-gray-600 mb-4'>
+                  Have a discount code? You can apply it at checkout.
+                </p>
+
+                {% assign subtotal = cart.subtotal_price
+                  | default: cart.items_subtotal_price
+                  | default: cart.total_price
+                %}
+
+                <h3 class='text-xl' id='subtotal-price'>Subtotal: {{ subtotal | money }}</h3>
+
+                {% if cart.tax_lines.size > 0 %}
+                  <p class='text-sm mt-2' id='tax-price'>Tax: {{ cart.total_tax | money }}</p>
+                  <p class='text-lg font-semibold' id='total-price'>
+                    Total: {{ cart.total_price | money }}
+                  </p>
+                {% else %}
+                  <p class='text-sm text-gray-500 mt-2'>
+                    Taxes and shipping calculated at checkout.
+                  </p>
+                {% endif %}
+              {% when 'update_button' %}
+                <div class='my-2'>
+                  <button
+                    id='update-cart-button'
+                    type='button'
+                    name='update'
+                    class='w-full bg-orange-500 hover:bg-orange-600 text-white font-medium py-2 px-4 rounded cursor-pointer'
+                  >
+                    Update
+                  </button>
+                </div>
+              {% when 'checkout_button' %}
+                <div class='my-2'>
+                  <button
+                    type='submit'
+                    name='checkout'
+                    class='w-full bg-black hover:bg-gray-900 text-white font-medium py-2 px-4 rounded cursor-pointer'
+                  >
+                    Checkout
+                  </button>
+                  <div class='mt-2 flex items-center gap-2 text-sm text-gray-500'>
+                    <svg
+                      xmlns='http://www.w3.org/2000/svg'
+                      class='h-4 w-4 text-green-600'
+                      fill='none'
+                      viewBox='0 0 24 24'
+                      stroke='currentColor'
+                    >
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 11c0-1.104.896-2 2-2s2 .896 2 2v1h-4v-1zM5 13h14v6a2 2 0 01-2 2H7a2 2 0 01-2-2v-6z" />
+                    </svg>
+                    <span>Secure checkout</span>
+                  </div>
+                </div>
+              {% else %}
+
+            {% endcase %}
+          {% endfor %}
+        </div>
       </div>
+    </form>
+  </div>
+</div>
+
+<div
+  id='empty-cart-message'
+  class='max-w-6xl h-60 my-4 mx-auto flex items-center justify-center'
+  style='{% if cart.item_count > 0 %}display:none;{% endif %}'
+>
+  <div class='text-center'>
+    <h1 class='text-3xl my-4'>Your cart is empty</h1>
+    <div class='my-4 py-4'>
+      <a
+        href='{{ routes.all_products_collection_url }}'
+        class='border border-gray-600 text-white bg-gray-600 px-8 py-3'
+        >Continue shopping</a
+      >
     </div>
   </div>
-{% endif %}
+</div>
 
 {% schema %}
 {
@@ -186,3 +154,103 @@
   ]
 }
 {% endschema %}
+<script>
+  async function changeLineItem(lineIndex, quantity) {
+    console.log('calledxxx');
+    const response = await fetch('/cart/change.js', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Accept: 'application/json'
+      },
+      body: JSON.stringify({
+        line: parseInt(lineIndex, 10) + 1, // Shopify uses 1-based line numbers
+        quantity: quantity
+      })
+    });
+
+    if (!response.ok) {
+      console.error('Cart update failed');
+      return;
+    }
+
+    const updatedCart = await response.json();
+    updateCart(updatedCart);
+  }
+
+  function updateCart(cart) {
+    console.log('cart --> ', cart);
+    const cartItemsContainer = document.querySelector('#cart-items');
+    if (!cartItemsContainer) return;
+
+    if (cart.item_count === 0) {
+      document.getElementById('cart-content').style.display = 'none';
+      document.getElementById('empty-cart-message').style.display = 'flex'; // or 'block'
+    } else {
+      document.getElementById('cart-content').style.display = 'block';
+      document.getElementById('empty-cart-message').style.display = 'none';
+    }
+
+    cartItemsContainer.innerHTML = '';
+
+    cart.items.forEach((item, index) => {
+      const cartItem = document.createElement('cart-item');
+      cartItem.setAttribute('variant-id', item.variant_id);
+      cartItem.setAttribute('quantity', item.quantity);
+      cartItem.setAttribute('product-url', item.url);
+      cartItem.setAttribute('product-title', item.product_title);
+      cartItem.setAttribute('variant-title', item.variant_title || '');
+      cartItem.setAttribute('image-src', item.image);
+      cartItem.setAttribute('line-price', formatMoney(item.line_price)); // formatted
+      cartItem.setAttribute('final-price', formatMoney(item.final_price)); // formatted
+      cartItem.setAttribute('line-index', index);
+
+      cartItemsContainer.appendChild(cartItem);
+    });
+
+    const subtotalPriceEl = document.getElementById('subtotal-price');
+    if (subtotalPriceEl) {
+      subtotalPriceEl.textContent = formatMoney(
+        cart.items_subtotal_price || cart.subtotal_price || cart.total_price
+      );
+    }
+
+    const taxPriceEl = document.getElementById('tax-price');
+    if (taxPriceEl) {
+      taxPriceEl.textContent = formatMoney(cart.total_tax || 0);
+    }
+
+    const totalPriceEl = document.getElementById('total-price');
+    if (totalPriceEl) {
+      totalPriceEl.textContent = formatMoney(cart.total_price);
+    }
+  }
+
+  document.addEventListener('remove-item', (event) => {
+    const { lineIndex } = event.detail;
+    changeLineItem(lineIndex, 0);
+  });
+
+  document.addEventListener('DOMContentLoaded', () => {
+    const updateBtn = document.getElementById('update-cart-button');
+    if (updateBtn) {
+      updateBtn.addEventListener('click', async () => {
+        const cartItems = document.querySelectorAll('cart-item');
+        for (const cartItem of cartItems) {
+          const lineIndex = cartItem.getAttribute('line-index');
+          const quantity = cartItem.currentQuantity;
+          console.log('lineIndex --> ', lineIndex);
+          console.log('quantity --> ', quantity);
+          await changeLineItem(lineIndex, quantity);
+        }
+      });
+    } else {
+      console.warn('Update cart button not found');
+    }
+  });
+
+  function formatMoney(cents) {
+    if (typeof cents !== 'number') return '';
+    return (cents / 100).toLocaleString('en-US', { style: 'currency', currency: 'USD' });
+  }
+</script>

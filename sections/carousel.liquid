@@ -4,8 +4,8 @@
       [
         {% for block in section.blocks %}
           {
-            "image": "{{ block.settings.image | image_url }}",
-            "link": "{{ block.settings.link }}"
+            "image": "{{ block.settings.image | image_url | default: '' }}",
+            "link": "{{ block.settings.link | default: '#' }}"
           }{% unless forloop.last %},{% endunless %}
         {% endfor %}
       ]
